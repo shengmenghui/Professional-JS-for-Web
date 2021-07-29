@@ -51,7 +51,48 @@ Object.assign()实际上对每个源对象执行的是浅复制。如果多个�
 #### 3.简写方法名
 简写方法名对获取函数和设置函数也是适用的。简写方法名与可计算属性键相互兼容。
 ### 8.1.7 对象解构
-可以在一条语句中使用嵌套数据实现一个或多个赋值操作。简单地说就是使用与对象相匹配的结构来实现对象属性赋值。
+可以在一条语句中使用嵌套数据实现一个或多个赋值操作。简单地说就是使用与对象相匹配的结构来实现对象属性赋值。如果引用的属性不存在，则该变量的值就是undefined。解构在内部使用函数ToObject()把源数据结构转换为对象。
+
+    let { name: personName, age: personAge } = person;
+    let { name, age } = person; //可以使用简写语法。
+    let { name, job='Software engineer' } = person; //可以定义默认值
+    let { constructor: c } = 4; // 原始值会被当做对象。所以null、undefined不能被解构。
+    console.log(c === Number); // true
+解构并不要求变量必须在解构表达式中声明。不过，如果是给事先声明的变量赋值，则赋值表达式
+必须包含在一对括号中。
+
+    let personName, personAge; 
+    let person = { 
+     name: 'Matt', 
+     age: 27 
+    }; 
+    ({name: personName, age: personAge} = person);
+#### 1.嵌套解构
+解构对于引进嵌套属性或赋值目标没有限制。解构赋值可以使用嵌套解构，以匹配嵌套属性。在外层属性没有定义的情况下不能使用嵌套解构。无论是源代码还是目标对象。
+#### 2.部分解构
+涉及多个属性的解构是一个输出无关的顺序化操作。如果一个解构表达式涉及多个赋值，且其中的赋值会报错，则出错之后的解构赋值会失败。
+#### 3.参数上下文匹配
+在函数参数列表中也可以进行解构赋值。
+## 8.2 创建对象
+若创建多个具有相同接口的对象，使用Object构造函数或对象字面量都有明显不足。
+### 8.2.1 概述
+ECMAScript 6 支持类和继承，但仅仅是封装了ES 5.1构造函数加原型继承的语法糖而已。
+### 8.2.2 工厂模式
+    function createPerson(name, age, job) { 
+     let o = new Object(); 
+     o.name = name; 
+     o.age = age; 
+     o.job = job; 
+     o.sayName = function() { 
+     console.log(this.name); 
+     }; 
+     return o; 
+    } 
+    let person1 = createPerson("Nicholas", 29, "Software Engineer"); 
+    let person2 = createPerson("Greg", 27, "Doctor");
+工厂模式虽然解决了创建多个类似对象的问题，但没有解决对象标识问题(即新创建的对象是什么类型)。
+
+
 
 
 
