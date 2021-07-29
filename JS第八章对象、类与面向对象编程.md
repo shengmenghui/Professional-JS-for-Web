@@ -79,23 +79,72 @@ Object.assign()实际上对每个源对象执行的是浅复制。如果多个�
 ECMAScript 6 支持类和继承，但仅仅是封装了ES 5.1构造函数加原型继承的语法糖而已。
 ### 8.2.2 工厂模式
     function createPerson(name, age, job) { 
-     let o = new Object(); 
-     o.name = name; 
-     o.age = age; 
-     o.job = job; 
-     o.sayName = function() { 
-     console.log(this.name); 
-     }; 
-     return o; 
+       let o = new Object(); 
+       o.name = name; 
+       o.age = age; 
+       o.job = job; 
+       o.sayName = function() { 
+         console.log(this.name); 
+       }; 
+       return o; 
     } 
     let person1 = createPerson("Nicholas", 29, "Software Engineer"); 
     let person2 = createPerson("Greg", 27, "Doctor");
 工厂模式虽然解决了创建多个类似对象的问题，但没有解决对象标识问题(即新创建的对象是什么类型)。
+### 8.2.3 构造函数模式
+构造函数是用于创建特定类型对象的。Object和Array是原生构造函数。可以以函数的形式自定义构造函数来定义属性和方法。
 
+        function Person(name, age, job){ 
+          this.name = name; 
+          this.age = age; 
+          this.job = job; 
+          this.sayName = function() { 
+            console.log(this.name); 
+          }; 
+        } 
+        let person1 = new Person("Nicholas", 29, "Software Engineer"); 
+        let person2 = new Person("Greg", 27, "Doctor"); 
+        person1.sayName(); // Nicholas 
+        person2.sayName(); // Greg
+和上面的区别是
+* 没有显示的创建对象
+* 属性和方法直接赋值给了this
+* 没有return
 
+按惯例，构造函数名称首字母都是要大写的，使用构造函数要使用new操作符。会执行如下操作：
+* 在内存中传建一个对象。
+* 这个新对象内部的[[Prototype]]特性被赋值为构造函数的prototype属性。
+* 构造函数内部的this被赋值为这个新对象(即this指向新对象)。
+* 执行构造函数内部的代码(给新对象添加属性)
+* 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象
 
+上面例子最后的两个对象都有一个constructor属性指向Person。instanceof操作符也可以确定对象类型。
 
+构造函数不一定要写成函数声明的形式。赋值给变量的函数表达式也可以表示构造函数：
 
+    let Person = function(name, age, job) { 
+       this.name = name; 
+       this.age = age; 
+       this.job = job; 
+       this.sayName = function() { 
+         console.log(this.name); 
+       }; 
+    }
+如果不想传参的话，函数后面的括号可以省略。
+#### 1.构造函数也是函数
+构造函数与普通函数唯一的区别是调用方式不同。构造函数也是函数，并没有把某个函数定义为构造函数的特殊用法。任何函数只要使用new操作符低啊用的就是构造函数，而不使用new操作符调用的函数就是普通函数。
+
+    // 作为构造函数
+    let person = new Person("Nicholas", 29, "Software Engineer"); 
+    person.sayName(); // "Nicholas" 
+    // 作为函数调用
+    Person("Greg", 27, "Doctor"); // 添加到 window 对象
+    window.sayName(); // "Greg" 
+    // 在另一个对象的作用域中调用
+    let o = new Object(); 
+    Person.call(o, "Kristen", 25, "Nurse"); 
+    o.sayName(); // "Kristen"
+在调用一个函数而没有明确设置this值的情况下(即没有作为对象的方法调用，或者没有使用call()/apply()调用)，this就会指向全局对象(在浏览器中就是window对象)。
 
 
 
