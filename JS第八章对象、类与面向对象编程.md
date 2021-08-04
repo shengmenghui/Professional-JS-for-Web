@@ -236,4 +236,31 @@ ECMAScript 6 支持类和继承，但仅仅是封装了ES 5.1构造函数加原�
 
 因为不是所有实现都对外暴露了[[Prototype]]，但可以使用isPrototypeOf()方法查找两个对象之间的关系。该方法会在传入参数的[[Prototype]]指向调用它的对象时返回true。
 
-Object类型有一个方法叫Object.getPrototypeOf()，返回参数内部属性[[Prototype]]的值。该方法可以较方便取得一个对象的原型，二者在通过原型实现继承时很重要
+Object类型有一个方法叫Object.getPrototypeOf()，返回参数内部属性[[Prototype]]的值。该方法可以较方便取得一个对象的原型，这在通过原型实现继承时很重要。
+
+Object.setPrototypeOf()可以向实例的私有特性[[Prototype]]写入新值，即可重写一个对象的原型继承关系。不过该方法可能会严重影响性能。所以推荐使用Object.create()老创建一个新对象，同时为其指定原型。
+
+#### 2.原型层级
+
+通过对象访问属性时，会按照属性名称开始搜索。先搜索对象实例本身，没有再向上搜索原型对象。constructor属性只存在于原型对象，因此通过实例对象也可以访问。只要给对象实例添加一个属性，这个属性就会**遮蔽**原型对象上的同名属性，不会修改但会屏蔽访问。只能通过delete操作符完全删除实例上的属性，才能让标识符解析过程能够继续搜索原型对象。
+
+hasOwnProperty()方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性（也就是，是否有指定的键）。
+
+#### 3.原型和in操作符
+
+##### 单独使用
+
+如果指定的属性在指定的对象或其原型链中，则in运算符返回true。如果要确定某个属性是否存在于原型上，可以用!object.hasOwnProperty(name) && (name in object)。
+
+##### for-in循环
+
+以任意顺序遍历一个对象的除Symbol以外的可枚举属性。可以通过对象访问且可以被枚举的属性都会返回，包括实例属性和原型属性。**遮蔽原型中不可枚举（[[Enumerable]]特性被设置为false）属性的实例属性也会在for-in循环中返回，因为默认情况下开发者定义的属性都是可枚举的。**？？？？
+
+Object.keys()方法会返回一个由一个给定对象的自身可枚举属性组成的数组，数组中属性名的排列顺序和正常循环遍历该对象时返回的顺序一致 。
+
+Object.getOwnPropertyNames()方法返回一个由指定对象的所有自身属性的属性名（包括不可枚举属性但不包括Symbol值作为名称的属性）组成的数组。
+
+    let keys = Object.getOwnPropertyNames(Person.prototype); 
+    console.log(keys); // "[constructor,name,age,job,sayName]" 包括不可枚举属性constructor。
+
+Object.getOwnPropertySymbols() 方法返回一个给定对象自身的所有 Symbol 属性的数组。
