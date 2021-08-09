@@ -264,3 +264,22 @@ Object.getOwnPropertyNames()方法返回一个由指定对象的所有自身属�
     console.log(keys); // "[constructor,name,age,job,sayName]" 包括不可枚举属性constructor。
 
 Object.getOwnPropertySymbols() 方法返回一个给定对象自身的所有 Symbol 属性的数组。
+
+#### 4.属性枚举顺序
+
+for-in循环和Object.keys()的枚举顺序是不确定的，取决于JS引擎，因浏览器而异。Object.getOwnPropertyNames()、bject.getOwnPropertySymbols()和 Object.assign()的枚举顺序是确定性的：先以升序枚举数值键，然后以插入顺序枚举字符串和符号键。在对象字面量中定义的键以它们逗号分隔的顺序插入。
+
+### 8.2.5 对象迭代
+
+Object.values()方法返回一个给定对象自身的所有可枚举属性值的数组，Object.entries()方法返回一个给定对象自身可枚举属性的键值对数组。值的顺序与使用for...in循环的顺序相同(区别在于 for-in 循环枚举原型链中的属性)。非字符串属性会被转换为字符串输出。这两个方法执行对象的浅复制。符号属性会被忽略。
+
+#### 1.其他原型对象
+
+我们通常直接通过一个包含所有属性和方法的对象字面量来重写原型，这会导致constructor属性不指向Person。若我们创建原型对象时也通过字面量给constructor属性赋值为构造函数，虽然能达到重新定向的效果，但[[Enumerable]]会默认为true。所以我们需要使用Object.defineProperty()方法来定义constructor属性。
+
+#### 2.原型动态性
+
+任何时候对原型对象所做的修改，也会在实例上反映出来。
+
+重写整个原型会切断最初原型与构造函数的联系，但实例引用的仍是最初的原型。实例只有指向原型的指针，没有指向构造函数的指针。重写构造函数上的原型之后再创建的实例才会引用新的原型。而在此之前创建的实例仍然会引用最
+初的原型。
